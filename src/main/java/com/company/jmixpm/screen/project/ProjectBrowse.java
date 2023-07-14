@@ -1,13 +1,19 @@
 package com.company.jmixpm.screen.project;
 
 import com.company.jmixpm.entity.Project;
+import com.company.jmixpm.security.specific.JmixPmProjectArchiveContext;
+import io.jmix.core.AccessManager;
 import io.jmix.core.DataManager;
 import io.jmix.ui.Notifications;
 import io.jmix.ui.action.Action;
+import io.jmix.ui.action.BaseAction;
+import io.jmix.ui.component.Button;
 import io.jmix.ui.component.GroupTable;
 import io.jmix.ui.model.CollectionLoader;
 import io.jmix.ui.screen.*;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import javax.inject.Named;
 
 @UiController("Project.browse")
 @UiDescriptor("project-browse.xml")
@@ -22,6 +28,20 @@ public class ProjectBrowse extends StandardLookup<Project> {
     private DataManager dataManager;
     @Autowired
     private Notifications notifications;
+
+    @Autowired
+    private AccessManager accessManager;
+    @Named("projectsTable.archive")
+    private BaseAction projectsTableArchive;
+
+    @Subscribe
+    public void onInit(InitEvent event) {
+        JmixPmProjectArchiveContext context = new JmixPmProjectArchiveContext();
+        accessManager.applyRegisteredConstraints(context);
+        projectsTableArchive.setVisible(context.isPermitted());
+    }
+
+
 
     @Subscribe
     public void onBeforeShow(BeforeShowEvent event) {
@@ -50,4 +70,11 @@ public class ProjectBrowse extends StandardLookup<Project> {
     public void setHideArchived(boolean hideArchived) {
         this.hideArchived = hideArchived;
     }
+
+    /*@Install(to = "projectsTable.archive", subject = "enabledRule")
+    private boolean projectsTableArchiveEnabledRule() {
+        JmixPmProjectArchiveContext context = new JmixPmProjectArchiveContext();
+        accessManager.applyRegisteredConstraints(context);
+        return context.isPermitted();
+    }*/
 }

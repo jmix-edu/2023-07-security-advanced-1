@@ -10,4 +10,11 @@ import io.jmix.ui.screen.UiDescriptor;
 @UiDescriptor("document-browse.xml")
 @LookupComponent("documentsTable")
 public class DocumentBrowse extends StandardLookup<Document> {
+    /*@Autowired
+    private UnconstrainedDataManager unconstrainedDataManager;
+
+    @Install(to = "documentsDl", target = Target.DATA_LOADER)
+    private List<Document> documentsDlLoadDelegate(LoadContext<Document> loadContext) {
+        return unconstrainedDataManager.loadList(loadContext);
+    }*/
 }

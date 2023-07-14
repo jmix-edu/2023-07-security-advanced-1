@@ -4,13 +4,17 @@ import com.company.jmixpm.app.RegistrationService;
 import com.company.jmixpm.entity.User;
 import com.company.jmixpm.screen.login.LoginScreen;
 import com.company.jmixpm.screen.main.MainScreen;
+import com.company.jmixpm.security.DatabaseUserRepository;
 import com.vaadin.server.VaadinServletRequest;
 import com.vaadin.server.VaadinServletResponse;
 import io.jmix.core.security.SecurityContextHelper;
+import io.jmix.core.security.SystemAuthenticationToken;
+import io.jmix.securityui.authentication.AuthDetails;
 import io.jmix.securityui.authentication.LoginScreenSupport;
 import io.jmix.ui.Notifications;
 import io.jmix.ui.ScreenBuilders;
 import io.jmix.ui.component.*;
+import io.jmix.ui.navigation.Route;
 import io.jmix.ui.navigation.UrlParamsChangedEvent;
 import io.jmix.ui.screen.*;
 import io.micrometer.core.instrument.util.StringUtils;
@@ -18,11 +22,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.authentication.LockedException;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
 
 @UiController("UserActivation")
 @UiDescriptor("user-activation.xml")
+@Route(path = "activate", root = true)
 public class UserActivation extends Screen {
 
     private static final Logger log = LoggerFactory.getLogger(UserActivation.class);
@@ -51,6 +60,8 @@ public class UserActivation extends Screen {
     private ScreenBuilders screenBuilders;
     @Autowired
     private LinkButton returnToLoginScreen;
+    @Autowired
+    private DatabaseUserRepository userRepository;
 
     @Autowired
     protected AuthenticationManager authenticationManager;
@@ -91,7 +102,8 @@ public class UserActivation extends Screen {
         returnToLoginScreen.setVisible(!success);
 
         if (user != null) {
-            welcomeLabel.setValue(messageBundle.formatMessage("finishActivation", user.getFirstName(), user.getLastName()));
+            welcomeLabel.setValue(messageBundle.formatMessage("finishActivation",
+                    user.getFirstName(), user.getLastName()));
         }
 
         initialized = true;
@@ -106,21 +118,41 @@ public class UserActivation extends Screen {
         String password = passwordField.getValue();
         registrationService.activateUser(user, password);
 
-        //loginByPassword(password);
+//        loginByPassword(password);
 
         loginAsTrusted();
     }
 
     private void loginByPassword(String password) {
-        // todo login with password
+        try {
+            loginScreenSupport.authenticate(
+                    AuthDetails.of(user.getUsername(), password), this);
+        } catch (BadCredentialsException | DisabledException | LockedException e) {
+            log.info("Login failed", e);
+            notifications.create(Notifications.NotificationType.ERROR)
+                    .withCaption("LoginFailed")
+                    .withDescription("Activation failed")
+                    .show();
+        }
     }
 
     // mostly copied from io.jmix.securityui.authentication.LoginScreenSupport
     private void loginAsTrusted() {
         log.info("Login without password");
 
-        // todo login without password
-        Authentication authentication = null;
+        user = userRepository.loadUserByUsername(user.getUsername());
+
+        Authentication authentication = new SystemAuthenticationToken(user, user.getAuthorities());
+
+        try {
+            authenticationManager.authenticate(authentication);
+        } catch (AuthenticationException e) {
+            notifications.create()
+                    .withCaption("Activation Error")
+                    .withType(Notifications.NotificationType.ERROR)
+                    .show();
+            return;
+        }
 
         VaadinServletRequest request = VaadinServletRequest.getCurrent();
         VaadinServletResponse response = VaadinServletResponse.getCurrent();

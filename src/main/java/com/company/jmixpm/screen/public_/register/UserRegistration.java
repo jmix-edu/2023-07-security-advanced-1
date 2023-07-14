@@ -2,13 +2,16 @@ package com.company.jmixpm.screen.public_.register;
 
 import com.company.jmixpm.app.RegistrationService;
 import com.company.jmixpm.entity.User;
+import com.company.jmixpm.screen.login.LoginScreen;
 import io.jmix.email.EmailException;
 import io.jmix.ui.Notifications;
+import io.jmix.ui.ScreenBuilders;
 import io.jmix.ui.action.Action;
 import io.jmix.ui.component.Button;
 import io.jmix.ui.component.Form;
 import io.jmix.ui.component.TextField;
 import io.jmix.ui.component.ValidationErrors;
+import io.jmix.ui.navigation.Route;
 import io.jmix.ui.screen.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 @UiController("UserRegistration")
 @UiDescriptor("user-registration.xml")
+@Route(path = "register", root = true)
 public class UserRegistration extends Screen {
 
     @Autowired
@@ -34,12 +38,17 @@ public class UserRegistration extends Screen {
     private Notifications notifications;
     @Autowired
     private Button registerButton;
+    @Autowired
+    private ScreenBuilders screenBuilders;
 
     private static final Logger log = LoggerFactory.getLogger(UserRegistration.class);
 
     @Subscribe("backToLogin")
     public void onBackToLoginClick(Button.ClickEvent event) {
-        // todo go to login screen
+        screenBuilders.screen(this)
+                .withScreenClass(LoginScreen.class)
+                .withOpenMode(OpenMode.ROOT)
+                .show();
     }
 
     @Subscribe("register")
@@ -48,11 +57,15 @@ public class UserRegistration extends Screen {
             return;
         }
 
-        User user = registrationService.registerNewUser(emailField.getValue(), firstNameField.getValue(), lastNameField.getValue());
+        User user = registrationService.registerNewUser(
+                emailField.getValue(),
+                firstNameField.getValue(),
+                lastNameField.getValue()
+        );
 
         String activationToken = registrationService.generateRandomActivationToken();
 
-        registrationService.saveActivationToken(user, activationToken);
+        user = registrationService.saveActivationToken(user, activationToken);
 
         try {
             registrationService.sendActivationEmail(user);
