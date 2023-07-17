@@ -1,0 +1,162 @@
+version: 1
+
+dn: dc=example,dc=org
+objectClass: dcObject
+objectClass: organization
+dc: example
+o: example
+
+dn: ou=users,dc=example,dc=org
+objectClass: organizationalUnit
+ou: users
+
+dn: cn=admin,ou=users,dc=example,dc=org
+objectClass: groupOfNames
+cn: admin
+member: cn=lermontov,ou=users,dc=example,dc=org
+member: cn=pushkin,ou=users,dc=example,dc=org
+
+dn: cn=smith,ou=users,dc=example,dc=org
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: shadowAccount
+cn: smith
+cn: User6
+gidNumber: 1005
+homeDirectory: /home/smith
+sn: Smith
+uid: smith
+uidNumber: 1005
+employeeType: developer-restrictions
+givenName: Paul
+mail: smith@example.com
+telephoneNumber: 300-33-45
+userPassword:: c21pdGg=
+
+dn: cn=lennon,ou=users,dc=example,dc=org
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: shadowAccount
+cn: lennon
+cn: User1
+gidNumber: 1000
+homeDirectory: /home/lennon
+sn: Lennon
+uid: lennon
+uidNumber: 1000
+employeeType: developer-restrictions
+givenName: John
+mail: lennon@example.com
+telephoneNumber: (815) 155-15-292
+userPassword:: bGVubm9u
+
+dn: cn=petrov,ou=users,dc=example,dc=org
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: shadowAccount
+cn: petrov
+cn: User3
+gidNumber: 1002
+homeDirectory: /home/petrov
+sn: Petrov
+uid: petrov
+uidNumber: 1002
+employeeType: restricted-documents
+employeeType: restricted-projects
+givenName: Sergey
+mail: petrov@example.com
+telephoneNumber: +4 (234) 555-35-35
+userPassword:: cGV0cm92
+
+dn: cn=pushkin,ou=users,dc=example,dc=org
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: shadowAccount
+cn: pushkin
+cn: User4
+gidNumber: 1003
+homeDirectory: /home/pushkin
+sn: Pushkin
+uid: pushkin
+uidNumber: 1003
+employeeType: developer-restrictions
+givenName: Alexandr
+mail: pushkin@example.com
+telephoneNumber: +7 (321) 123-31-21
+userPassword:: cHVzaGtpbg==
+
+dn: cn=sidorov,ou=users,dc=example,dc=org
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: shadowAccount
+cn: sidorov
+cn: User5
+gidNumber: 1004
+homeDirectory: /home/sidorov
+sn: Sidorov
+uid: sidorov
+uidNumber: 1004
+employeeType: restricted-documents
+employeeType: restricted-projects
+givenName: Artem
+mail: sidorov@example.com
+telephoneNumber: +7 (300) 898-45-67
+userPassword:: c2lkb3Jvdg==
+
+dn: cn=tolstoy,ou=users,dc=example,dc=org
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: shadowAccount
+cn: tolstoy
+cn: User7
+gidNumber: 1006
+homeDirectory: /home/tolstoy
+sn: Tolstoy
+uid: tolstoy
+uidNumber: 1006
+employeeType: developer-restrictions
+givenName: Lev
+mail: tolstoy@example.com
+telephoneNumber: +7 (121) 404-15-98
+userPassword:: dG9sc3RveQ==
+
+dn: cn=division,ou=users,dc=example,dc=org
+objectClass: groupOfNames
+cn: division
+member: cn=lennon,ou=users,dc=example,dc=org
+member: cn=lermontov,ou=users,dc=example,dc=org
+member: cn=petrov,ou=users,dc=example,dc=org
+member: cn=pushkin,ou=users,dc=example,dc=org
+member: cn=sidorov,ou=users,dc=example,dc=org
+member: cn=smith,ou=users,dc=example,dc=org
+member: cn=tolstoy,ou=users,dc=example,dc=org
+
+dn: cn=managers,ou=users,dc=example,dc=org
+objectClass: groupOfNames
+cn: managers
+member: cn=petrov,ou=users,dc=example,dc=org
+member: cn=sidorov,ou=users,dc=example,dc=org
+
+dn: cn=lermontov,ou=users,dc=example,dc=org
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: shadowAccount
+cn: lermontov
+cn: User2
+gidNumber: 1001
+homeDirectory: /home/lermontov
+sn: Lermontov
+uid: lermontov
+uidNumber: 1001
+givenName: Mihail
+mail: lermontov@example.com
+telephoneNumber: 123-456-789
+userPassword:: bGVybW9udG92
+
+dn: cn=developers,ou=users,dc=example,dc=org
+objectClass: groupOfNames
+cn: developers
+member: cn=lennon,ou=users,dc=example,dc=org
+member: cn=smith,ou=users,dc=example,dc=org
+member: cn=tolstoy,ou=users,dc=example,dc=org
+
